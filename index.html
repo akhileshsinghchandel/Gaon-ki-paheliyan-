@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>देसी जुगाड़ पहेलियाँ - 100 लेवल्स</title>
+  <meta name="description" content="मजेदार देसी पहेलियाँ और भारतीय जुगाड़ ट्रिक्स पर आधारित क्विज गेम।">
+  <style>
+    :root{--bg:#0b1120;--card:#1e293b;--accent:#f59e0b;--primary:#3b82f6;--success:#10b981;--danger:#ef4444;--text:#f8fafc;--muted:#94a3b8}
+    *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,sans-serif;-webkit-tap-highlight-color:transparent}
+    body{background:var(--bg);color:var(--text);display:flex;justify-content:center;min-height:100vh;overflow-x:hidden}
+    #app{width:100%;max-width:480px;min-height:100vh;background:linear-gradient(180deg,#0b1120 0%,#131f37 100%);padding:16px;display:flex;flex-direction:column;position:relative}
+    .screen{display:none;flex-direction:column;flex:1;animation:fadeIn .25s ease-out}
+    .screen.active{display:flex}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    .btn{background:var(--card);color:var(--text);border:1px solid #334155;border-radius:12px;padding:12px 18px;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s}
+    .btn:active{transform:scale(.97)}
+    .btn-accent{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;border:none;box-shadow:0 4px 14px rgba(245,158,11,.35)}
+    .btn-primary{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;border:none}
+    .hero{text-align:center;padding:20px 0 14px}
+    .hero-badge{display:inline-block;background:rgba(245,158,11,.15);color:var(--accent);border:1px solid rgba(245,158,11,.3);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:8px}
+    .hero-title{font-size:26px;font-weight:900;background:linear-gradient(90deg,#fbbf24,#f59e0b,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .card{background:var(--card);border:1px solid #334155;border-radius:16px;padding:16px;margin-bottom:12px}
+    .stats-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center;margin-bottom:16px}
+    .stat-val{font-size:20px;font-weight:800;color:var(--accent)}
+    .stat-lbl{font-size:11px;color:var(--muted)}
+    .levels-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-height:65vh;overflow-y:auto;padding:4px}
+    .lvl-btn{aspect-ratio:1;border-radius:12px;border:1px solid #334155;background:#131d31;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:700;font-size:14px;cursor:pointer}
+    .lvl-btn.unlocked{background:#1e293b;border-color:var(--accent);color:#fff}
+    .lvl-btn.current{border:2px solid #38bdf8;box-shadow:0 0 12px rgba(56,189,248,.4)}
+    .lvl-btn.locked{opacity:.4;cursor:not-allowed}
+    .lvl-stars{font-size:9px;color:var(--accent);margin-top:2px}
+    .q-card{background:var(--card);border:1px solid #334155;border-radius:16px;padding:18px;margin-bottom:14px}
+    .q-text{font-size:16px;font-weight:700;line-height:1.45;min-height:50px}
+    .opts{display:flex;flex-direction:column;gap:10px}
+    .opt-btn{background:#172237;border:1px solid #334155;border-radius:12px;padding:13px 15px;text-align:left;font-size:15px;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .15s}
+    .opt-btn .opt-badge{width:26px;height:26px;border-radius:6px;background:#334155;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+    .opt-btn.correct{background:rgba(16,185,129,.2);border-color:var(--success);color:#6ee7b7}
+    .opt-btn.wrong{background:rgba(239,68,68,.2);border-color:var(--danger);color:#fca5a5}
+    .mic-btn{background:#1e293b;border:1px solid #475569;border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer}
+    .mic-btn.listening{background:var(--danger);animation:pulse 1s infinite;border-color:#fca5a5}
+    @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:99;align-items:center;justify-content:center;padding:16px}
+    .modal.active{display:flex}
+    .modal-box{background:var(--card);border:1px solid #475569;border-radius:20px;padding:22px;width:100%;max-width:380px;text-align:center}
+    .timer-bar{height:6px;background:#334155;border-radius:3px;overflow:hidden;margin:10px 0}
+    .timer-fill{height:100%;background:var(--accent);width:100%;transition:width 1s linear}
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- 1. HOME SCREEN -->
+  <div id="s-home" class="screen active">
+    <div class="hero">
+      <div class="hero-badge">🧠 100 लेवल्स • 500 पहेलियाँ</div>
+      <h1 class="hero-title">🇮🇳 देसी जुगाड़ पहेलियाँ</h1>
+      <p style="color:var(--muted);font-size:13px;margin-top:4px">दिमाग की बत्ती जलाओ, पहेलियाँ बूझो!</p>
+    </div>
+    <div class="card stats-bar">
+      <div><div id="h-level" class="stat-val">1</div><div class="stat-lbl">लेवल</div></div>
+      <div><div id="h-score" class="stat-val">0</div><div class="stat-lbl">स्कोर</div></div>
+      <div><div id="h-stars" class="stat-val">0 ⭐</div><div class="stat-lbl">कुल सितारे</div></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:auto">
+      <button class="btn btn-accent" style="padding:15px" onclick="G.startLevel(G.state.level)">🚀 खेल शुरू करें (Play)</button>
+      <button class="btn" onclick="G.showScreen('s-levels')">🗺️ 100 लेवल्स मैप (Levels)</button>
+      <button class="btn" onclick="G.openLeaderboard()">🏆 लीडरबोर्ड (Leaderboard)</button>
+      <button class="btn" onclick="G.openSettings()">⚙️ सेटिंग्स (Settings)</button>
+      <button class="btn btn-primary" onclick="G.copySourceCode()">📋 पूरा कोड कॉपी करें (One-Click Copy)</button>
+    </div>
+    <div style="text-align:center;font-size:12px;color:var(--muted);padding:10px">🎤 माइक बोलकर भी उत्तर दे सकते हैं!</div>
+  </div>
+
+  <!-- 2. 100 LEVELS MAP SCREEN -->
+  <div id="s-levels" class="screen">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <button class="btn" style="padding:7px 12px" onclick="G.showScreen('s-home')">⬅️ होम</button>
+      <h2 style="font-size:18px;font-weight:800">🗺️ 100 लेवल्स मैप</h2>
+      <div style="font-size:13px;color:var(--accent);font-weight:700" id="map-stars">0 ⭐</div>
+    </div>
+    <div id="levels-container" class="levels-grid"></div>
+  </div>
+
+  <!-- 3. QUIZ PLAY SCREEN -->
+  <div id="s-quiz" class="screen">
+    <div style="display:flex;align-items:center;justify-content:space-between;font-size:14px;margin-bottom:8px">
+      <button class="btn" style="padding:6px 12px;font-size:13px" onclick="G.showScreen('s-home')">🏠 होम</button>
+      <span style="font-weight:800;color:var(--accent)" id="q-lvl-badge">लेवल 1</span>
+      <span style="font-weight:700;color:var(--muted)" id="q-progress">1 / 5</span>
+    </div>
+    <div class="timer-bar"><div id="q-timer" class="timer-fill"></div></div>
+    <div class="q-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:12px;background:#334155;padding:3px 8px;border-radius:6px" id="q-num-text">सवाल #1</span>
+        <button id="btn-mic" class="mic-btn" onclick="G.toggleVoice()" title="माइक से बोलें">🎙️</button>
+      </div>
+      <div id="q-text" class="q-text">पहेली लोड हो रही है...</div>
+      <div id="voice-status" style="font-size:12px;color:var(--accent);margin-top:6px;min-height:16px;text-align:center"></div>
+    </div>
+    <div class="opts" id="q-options"></div>
+    <div style="display:flex;justify-content:space-between;gap:8px;margin-top:14px">
+      <button class="btn" style="flex:1" onclick="G.useHint()">💡 संकेत (Hint)</button>
+      <button class="btn" style="flex:1" onclick="G.use5050()">⚡ 50-50</button>
+    </div>
+  </div>
+
+  <!-- MODALS -->
+  <div id="m-result" class="modal">
+    <div class="modal-box">
+      <div style="font-size:40px" id="res-icon">🎉</div>
+      <h2 style="font-size:20px;margin:6px 0" id="res-title">शानदार जीत!</h2>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:12px" id="res-desc">लेवल सफलतापूर्वक पूरा हुआ।</p>
+      <div class="card" style="margin-bottom:14px">
+        <div style="font-size:26px;color:var(--accent);font-weight:800" id="res-stars">⭐⭐⭐</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:2px">स्कोर: <span id="res-score">0</span></div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn" style="flex:1" onclick="G.showScreen('s-levels');G.closeModal('m-result')">मैप</button>
+        <button class="btn btn-accent" style="flex:1" id="btn-next-lvl" onclick="G.nextLevel()">अगला लेवल</button>
+      </div>
+    </div>
+  </div>
+  <div id="m-board" class="modal">
+    <div class="modal-box">
+      <h2 style="margin-bottom:12px">🏆 देसी लीडरबोर्ड</h2>
+      <div id="leaderboard-list" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px"></div>
+      <button class="btn" style="width:100%" onclick="G.closeModal('m-board')">बंद करें</button>
+    </div>
+  </div>
+  <div id="m-settings" class="modal">
+    <div class="modal-box">
+      <h2 style="margin-bottom:12px">⚙️ सेटिंग्स</h2>
+      <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #334155">
+        <span>ध्वनि प्रभाव (Sound)</span>
+        <input type="checkbox" id="cfg-sound" checked onchange="G.toggleSound(this.checked)" style="transform:scale(1.2)">
+      </div>
+      <button class="btn btn-danger" style="width:100%;margin-top:12px;background:#7f1d1d;border:none" onclick="G.resetGame()">⚠️ प्रगति रीसेट करें</button>
+      <button class="btn" style="width:100%;margin-top:8px" onclick="G.closeModal('m-settings')">ठीक है</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// Synthesizer Audio
+const AudioEngine = {
+  ctx: null, enabled: true,
+  play(freq, type="sine", dur=0.15) {
+    if (!this.enabled) return;
+    if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    try {
+      const osc = this.ctx.createOscillator(), g = this.ctx.createGain();
+      osc.type = type; osc.frequency.value = freq;
+      g.gain.setValueAtTime(0.1, this.ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + dur);
+      osc.connect(g); g.connect(this.ctx.destination);
+      osc.start(); osc.stop(this.ctx.currentTime + dur);
+    } catch(e){}
+  },
+  correct() { this.play(587,"triangle",.1); setTimeout(()=>this.play(880,"sine",.2),100); },
+  wrong() { this.play(220,"sawtooth",.2); setTimeout(()=>this.play(165,"sawtooth",.25),150); }
+};
+
+// 500 Algorithmic Desi Questions Generator
+const DESI_POOL = [
+  { q: "ऐसी कौन सी चीज़ है जो आपकी है, पर दूसरे उसे आपसे ज्यादा इस्तेमाल करते हैं?", a: "आपका नाम (Name)", d: ["पैसा", "फोन", "गाड़ी"], exp: "नाम दूसरे लोग पुकारते हैं!" },
+  { q: "एक कमरे में 4 कोने हैं। अगर 1 कोना काट दिया जाए तो अब कितने कोने बचेंगे?", a: "5 कोने", d: ["3 कोने", "4 कोने", "कोई नहीं"], exp: "काटने पर दो नए सिरे बन जाते हैं!" },
+  { q: "वह क्या है जिसे आप जितना खर्च करते हैं, वह उतना ही कम होता जाता है?", a: "उम्र (Age)", d: ["दौलत", "परछाई", "ज्ञान"], exp: "समय के साथ उम्र घटती जाती है!" },
+  { q: "लाल डिब्बी में काले-मीठे दाने, खाने वाले इसके बड़े दीवाने?", a: "अनार (Pomegranate)", d: ["सेब", "संतरा", "तरबूज"], exp: "अनार के अंदर मीठे दाने होते हैं।" },
+  { q: "ऐसी कौन सी चीज़ है जो पानी पीते ही मर जाती है?", a: "प्यास (Thirst)", d: ["आग", "मछली", "मेंढक"], exp: "पानी पीने से प्यास बुझ जाती है!" },
+  { q: "वह कौन है जो बिना पैरों के दौड़ता है और कभी वापस नहीं आता?", a: "समय (Time)", d: ["नदी", "हवा", "बादल"], exp: "बीता समय कभी लौटता नहीं।" },
+  { q: "रात में रोती है, दिन में सोती है, जितना जलती उतनी छोटी होती है?", a: "मोमबत्ती (Candle)", d: ["ट्यूबलाइट", "सूरज", "आत्मा"], exp: "मोमबत्ती जलकर पिघल जाती है।" },
+  { q: "गोल है पर गेंद नहीं, पूँछ है पर पशु नहीं, बच्चे उसे हवा में उड़ाते हैं?", a: "गुब्बारा (Balloon)", d: ["पतंग", "चिड़िया", "पहिया"], exp: "गुब्बारे की डोर पूँछ जैसी होती है।" },
+  { q: "दो अक्षर का नाम, सिर ढकना मेरा काम! बताओ क्या?", a: "टोपी (Cap)", d: ["रूमाल", "पगड़ी", "छाता"], exp: "टो-पी सिर पर पहनी जाती है।" },
+  { q: "हरी थी मन भरी थी, लाख मोती जड़ी थी, राजा जी के बाग में दुशाला ओढ़े खड़ी थी?", a: "भुट्टा (Corn)", d: ["गोभी", "मिर्च", "गाजर"], exp: "भुट्टे पर दाने मोती जैसे होते हैं।" },
+  { q: "बूझो भैया एक पहेली, जब काटो तो निकले नई नवेली?", a: "पेंसिल (Pencil)", d: ["गन्ना", "पेड़", "नाखून"], exp: "छीलने पर पेंसिल की नई नोक आती है।" },
+  { q: "चार पैर हैं पर चल नहीं सकती, बैठो चाहे उस पर गिर नहीं सकती?", a: "कुर्सी (Chair)", d: ["चारपाई", "मेज", "सोफा"], exp: "कुर्सी के 4 पाये होते हैं।" },
+  { q: "कटोरे पे कटोरा, बेटा बाप से भी गोरा! बताओ क्या?", a: "नारियल (Coconut)", d: ["अंडा", "दूध", "मक्खन"], exp: "नारियल की गिरी अंदर से बिल्कुल सफेद होती है।" },
+  { q: "एक पेड़ पर 10 चिड़ियाँ थीं। शिकारी ने 1 मारी, अब कितनी बचीं?", a: "शून्य (0)", d: ["9 चिड़ियाँ", "1 चिड़िया", "10 चिड़ियाँ"], exp: "गोली की आवाज से बाकी सब उड़ गईं!" },
+  { q: "सोने की वह चीज़ है पर बेचे ना सुनार, भारी ना उसका मोल, बताओ उसका नाम?", a: "चारपाई (Bed)", d: ["सोना (Gold)", "चांदी", "मुकुट"], exp: "सोने (नींद) के काम आती है।" },
+  { q: "आँखें हैं पर देख नहीं सकती, मुँह है पर बोल नहीं सकती?", a: "गुड़िया (Doll)", d: ["चश्मा", "मूर्ति", "रोबोट"], exp: "खिलौना गुड़िया निर्जीव होती है।" },
+  { q: "अगर एक अंडा उबलने में 10 मिनट लगते हैं, तो 5 अंडे एक साथ उबलने में कितने मिनट लगेंगे?", a: "10 मिनट", d: ["50 मिनट", "25 मिनट", "5 मिनट"], exp: "सारे अंडे एक ही बर्तन में साथ उबलेंगे!" },
+  { q: "वह कौन सी कली है जो बागों में नहीं, घर की दीवारों पर खिलती है?", a: "छिपकली (Lizard)", d: ["गुलाब", "चमेली", "सूरजमुखी"], exp: "छिप-कली दीवार पर चलती है।" },
+  { q: "काला घोड़ा सफेद सवारी, एक उतरा तो दूसरे की बारी?", a: "तवा और रोटी", d: ["चाकू-फल", "गाड़ी-सवारी", "कलम-स्याही"], exp: "तवे पर रोटी सेंकी जाती है।" },
+  { q: "तीतर के आगे दो तीतर, तीतर के पीछे दो तीतर! कुल कितने तीतर?", a: "3 तीतर", d: ["5 तीतर", "6 तीतर", "4 तीतर"], exp: "एक कतार में 3 तीतर होते हैं।" }
+];
+
+function generateQuestion(qNum) {
+  const p = DESI_POOL[(qNum - 1) % DESI_POOL.length];
+  const cycle = Math.floor((qNum - 1) / DESI_POOL.length);
+  let text = p.q, correct = p.a, dist = [...p.d];
+  if (cycle > 0 && qNum % 3 === 0) {
+    const n = (qNum * 4) % 30 + 10;
+    text = `[जुगाड़ #${qNum}] एक टोकरी में ${n} सेब हैं। आपने 3 सेब उठा लिए, अब आपके पास कितने सेब हैं?`;
+    correct = "3 सेब"; dist = [`${n - 3} सेब`, `${n} सेब`, "शून्य"];
+  } else if (cycle > 0 && qNum % 4 === 0) {
+    text = `[पहेली #${qNum}] एक दर्जी 10 मीटर कपड़े से प्रतिदिन 2 मीटर काटता है। वह कितने दिनों में पूरे टुकड़े करेगा?`;
+    correct = "4 दिन"; dist = ["5 दिन", "10 दिन", "8 दिन"];
+  }
+  // Fisher-Yates shuffle algorithm (prevents correct answer always being Option A):
+  const opts = [{t:correct, c:true}, {t:dist[0], c:false}, {t:dist[1], c:false}, {t:dist[2], c:false}];
+  for (let i = opts.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [opts[i], opts[j]] = [opts[j], opts[i]];
+  }
+  return { num: qNum, text, options: opts.map(o => o.t), correctIndex: opts.findIndex(o => o.c), exp: p.exp };
+}
+
+// Game Controller
+const G = {
+  state: { level: 1, maxUnlocked: 1, score: 0, stars: {}, qIndex: 0, currQ: null, timer: null, timeLeft: 25 },
+  recognition: null, isListening: false,
+  init() {
+    this.loadState(); this.renderHome(); this.renderLevelsMap(); this.setupSpeech();
+  },
+  loadState() {
+    try { const s = localStorage.getItem("dj_state"); if (s) Object.assign(this.state, JSON.parse(s)); } catch(e){}
+  },
+  saveState() {
+    localStorage.setItem("dj_state", JSON.stringify({
+      level: this.state.level, maxUnlocked: this.state.maxUnlocked, score: this.state.score, stars: this.state.stars
+    }));
+  },
+  showScreen(id) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+    if (id === "s-home") this.renderHome();
+    if (id === "s-levels") this.renderLevelsMap();
+  },
+  renderHome() {
+    document.getElementById("h-level").innerText = this.state.level;
+    document.getElementById("h-score").innerText = this.state.score;
+    const tot = Object.values(this.state.stars).reduce((a,b)=>a+b, 0);
+    document.getElementById("h-stars").innerText = tot + " ⭐";
+  },
+  renderLevelsMap() {
+    const c = document.getElementById("levels-container"); c.innerHTML = "";
+    const tot = Object.values(this.state.stars).reduce((a,b)=>a+b, 0);
+    document.getElementById("map-stars").innerText = tot + " ⭐";
+    for (let i = 1; i <= 100; i++) {
+      const btn = document.createElement("div");
+      const unl = i <= this.state.maxUnlocked, isCur = i === this.state.level;
+      btn.className = `lvl-btn ${unl ? 'unlocked' : 'locked'} ${isCur ? 'current' : ''}`;
+      const stars = this.state.stars[i] || 0;
+      btn.innerHTML = `<div>${i}</div><div class="lvl-stars">${unl ? (stars ? '⭐'.repeat(stars) : '•') : '🔒'}</div>`;
+      if (unl) btn.onclick = () => this.startLevel(i);
+      c.appendChild(btn);
+    }
+  },
+  startLevel(lvl) {
+    this.state.level = lvl; this.state.qIndex = 0;
+    this.showScreen("s-quiz"); this.loadQuestion();
+  },
+  loadQuestion() {
+    clearInterval(this.state.timer);
+    const qNum = (this.state.level - 1) * 5 + (this.state.qIndex + 1);
+    this.state.currQ = generateQuestion(qNum);
+    document.getElementById("q-lvl-badge").innerText = `लेवल ${this.state.level}`;
+    document.getElementById("q-progress").innerText = `${this.state.qIndex + 1} / 5`;
+    document.getElementById("q-num-text").innerText = `पहेली #${qNum}`;
+    document.getElementById("q-text").innerText = this.state.currQ.text;
+    document.getElementById("voice-status").innerText = "";
+    const optsDiv = document.getElementById("q-options"); optsDiv.innerHTML = "";
+    const badges = ["क", "ख", "ग", "घ"];
+    this.state.currQ.options.forEach((opt, idx) => {
+      const b = document.createElement("button");
+      b.className = "opt-btn"; b.id = `opt-${idx}`;
+      b.innerHTML = `<span class="opt-badge">${badges[idx]}</span><span>${opt}</span>`;
+      b.onclick = () => this.chooseOption(idx);
+      optsDiv.appendChild(b);
+    });
+    this.startTimer();
+  },
+  startTimer() {
+    this.state.timeLeft = 25;
+    const bar = document.getElementById("q-timer"); bar.style.width = "100%";
+    this.state.timer = setInterval(() => {
+      this.state.timeLeft--;
+      bar.style.width = (this.state.timeLeft / 25 * 100) + "%";
+      if (this.state.timeLeft <= 0) { clearInterval(this.state.timer); this.chooseOption(-1); }
+    }, 1000);
+  },
+  chooseOption(idx) {
+    clearInterval(this.state.timer);
+    const q = this.state.currQ;
+    const btns = document.querySelectorAll(".opt-btn");
+    btns.forEach(b => b.style.pointerEvents = "none");
+    if (idx === q.correctIndex) {
+      AudioEngine.correct();
+      if (btns[idx]) btns[idx].classList.add("correct");
+      this.state.score += 20;
+    } else {
+      AudioEngine.wrong();
+      if (btns[idx]) btns[idx].classList.add("wrong");
+      if (btns[q.correctIndex]) btns[q.correctIndex].classList.add("correct");
+    }
+    setTimeout(() => {
+      this.state.qIndex++;
+      if (this.state.qIndex < 5) this.loadQuestion();
+      else this.finishLevel();
+    }, 1300);
+  },
+  finishLevel() {
+    const stars = this.state.score >= 80 ? 3 : (this.state.score >= 50 ? 2 : 1);
+    this.state.stars[this.state.level] = Math.max(this.state.stars[this.state.level] || 0, stars);
+    if (this.state.level === this.state.maxUnlocked && this.state.maxUnlocked < 100) this.state.maxUnlocked++;
+    this.saveState();
+    document.getElementById("res-stars").innerText = "⭐".repeat(stars);
+    document.getElementById("res-score").innerText = this.state.score;
+    document.getElementById("btn-next-lvl").style.display = this.state.level < 100 ? "block" : "none";
+    this.openModal("m-result");
+  },
+  nextLevel() {
+    this.closeModal("m-result");
+    if (this.state.level < 100) this.startLevel(this.state.level + 1);
+  },
+  useHint() { alert("💡 संकेत: " + this.state.currQ.exp); },
+  use5050() {
+    let rem = 0;
+    this.state.currQ.options.forEach((_, idx) => {
+      if (idx !== this.state.currQ.correctIndex && rem < 2) {
+        const b = document.getElementById(`opt-${idx}`);
+        if (b && b.style.visibility !== "hidden") { b.style.visibility = "hidden"; rem++; }
+      }
+    });
+  },
+  setupSpeech() {
+    const S = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!S) return;
+    this.recognition = new S(); this.recognition.lang = "hi-IN";
+    this.recognition.onstart = () => {
+      this.isListening = true;
+      document.getElementById("btn-mic").classList.add("listening");
+      document.getElementById("voice-status").innerText = "🎙️ सुन रहे हैं... उत्तर बोलिए!";
+    };
+    this.recognition.onresult = (e) => {
+      const sp = e.results[0][0].transcript.trim().toLowerCase();
+      document.getElementById("voice-status").innerText = `आपने कहा: "${sp}"`;
+      if (!this.state.currQ) return;
+      let found = -1;
+      const map = { "पहला":0, "क":0, "एक":0, "a":0, "दूसरा":1, "ख":1, "दो":1, "b":1, "तीसरा":2, "ग":2, "तीन":2, "c":2, "चौथा":3, "घ":3, "चार":3, "d":3 };
+      for (let k in map) { if (sp === k || sp.startsWith(k)) { found = map[k]; break; } }
+      if (found === -1) {
+        this.state.currQ.options.forEach((opt, i) => { if (opt.toLowerCase().includes(sp) || sp.includes(opt.toLowerCase())) found = i; });
+      }
+      if (found !== -1) setTimeout(() => this.chooseOption(found), 300);
+    };
+    this.recognition.onerror = () => this.stopVoice();
+    this.recognition.onend = () => this.stopVoice();
+  },
+  toggleVoice() {
+    if (!this.recognition) return alert("माइक वॉयस आपके ब्राउज़र में उपलब्ध नहीं है।");
+    if (this.isListening) this.recognition.stop(); else this.recognition.start();
+  },
+  stopVoice() {
+    this.isListening = false;
+    document.getElementById("btn-mic").classList.remove("listening");
+  },
+  openLeaderboard() {
+    const r = [
+      { n: "आप (खिलाड़ी)", s: this.state.score + 50 },
+      { n: "जुगाड़ू भैया", s: 2450 }, { n: "रोहित शर्मा", s: 2180 }, { n: "अमित वर्मा", s: 1820 }, { n: "प्रिया पटेल", s: 1540 }
+    ].sort((a,b)=>b.s - a.s);
+    document.getElementById("leaderboard-list").innerHTML = r.map((p,i)=>`
+      <div style="display:flex;justify-content:space-between;background:#131d31;padding:8px 12px;border-radius:8px">
+        <span>#${i+1} ${p.n}</span><span style="color:var(--accent);font-weight:700">${p.s}</span>
+      </div>`).join("");
+    this.openModal("m-board");
+  },
+  openSettings() { this.openModal("m-settings"); },
+  openModal(id) { document.getElementById(id).classList.add("active"); },
+  closeModal(id) { document.getElementById(id).classList.remove("active"); },
+  toggleSound(on) { AudioEngine.enabled = on; },
+  resetGame() {
+    if (confirm("क्या आप पूरी प्रगति रीसेट करना चाहते हैं?")) { localStorage.removeItem("dj_state"); location.reload(); }
+  },
+  copySourceCode() {
+    fetch(window.location.href).then(r=>r.text()).then(t => {
+      navigator.clipboard.writeText(t).then(()=>alert("✅ पूरा कोड क्लिपबोर्ड पर कॉपी हो गया!"));
+    }).catch(()=>alert("कोड कॉपी करने के लिए ऊपर कोड आर्टिफ़ैक्ट देखें।"));
+  }
+};
+window.onload = () => G.init();
+</script>
+</body>
+</html>
